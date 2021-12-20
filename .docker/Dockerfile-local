@@ -1,0 +1,37 @@
+FROM golang:1.16-alpine AS builder
+
+RUN apk -U --no-cache add build-base git gcc bash
+
+WORKDIR /go/src/github.com/ory/hydra
+
+ADD go.mod go.mod
+ADD go.sum go.sum
+
+ENV GO111MODULE on
+ENV CGO_ENABLED 1
+
+RUN go mod download
+
+ADD . .
+
+ARG TAG
+ARG GIT_COMMIT
+ARG DATE
+RUN go build -o /usr/bin/hydra -ldflags="-s -w -X github.com/ory/hydra/driver/config.Version=${TAG} -X github.com/ory/hydra/driver/config.Commit=${GIT_COMMIT} -X github.com/ory/hydra/driver/config.Date=${DATE}"
+
+FROM alpine:3.14.3
+
+RUN addgroup -S ory; \
+    adduser -S ory -G ory -D -H -s /bin/nologin
+RUN apk add -U --no-cache ca-certificates
+
+COPY --from=builder /usr/bin/hydra /usr/bin/hydra
+
+# set up nsswitch.conf for Go's "netgo" implementation
+# - https://github.com/golang/go/blob/go1.9.1/src/net/conf.go#L194-L275
+RUN [ ! -e /etc/nsswitch.conf ] && echo 'hosts: files dns' > /etc/nsswitch.conf
+
+USER ory
+
+ENTRYPOINT ["hydra"]
+CMD ["serve", "all"]
