@@ -490,6 +490,14 @@ func (h *Handler) IntrospectHandler(w http.ResponseWriter, r *http.Request, _ ht
 		return
 	}
 
+	var username string
+	var usernameFromSession = session.GetUsername();
+	if (len(usernameFromSession) > 0) {
+		username = usernameFromSession;
+	} else {
+		username = c.GetUsername()
+	}
+
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 	if err = json.NewEncoder(w).Encode(&Introspection{
 		Active:            resp.IsActive(),
@@ -498,7 +506,7 @@ func (h *Handler) IntrospectHandler(w http.ResponseWriter, r *http.Request, _ ht
 		ExpiresAt:         exp.Unix(),
 		IssuedAt:          resp.GetAccessRequester().GetRequestedAt().Unix(),
 		Subject:           session.GetSubject(),
-		Username:          session.GetUsername(),
+		Username:          username,
 		Extra:             session.Extra,
 		Audience:          audience,
 		Issuer:            strings.TrimRight(h.c.IssuerURL().String(), "/") + "/",

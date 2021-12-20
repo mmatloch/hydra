@@ -201,6 +201,8 @@ type Client struct {
 
 	// User identifier
 	UserID string `json:"user_id" db:"user_id"`
+
+	Username string `json:"username" db:"username"`
 }
 
 func (Client) TableName() string {
@@ -333,4 +335,8 @@ func (c *Client) GetRequestURIs() []string {
 
 func (c *Client) GetUserID() string {
 	return c.UserID
+}
+
+func (c *Client) GetUsername() string {
+	return c.Username
 }
