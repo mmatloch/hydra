@@ -198,6 +198,9 @@ type Client struct {
 
 	// Metadata is arbitrary data.
 	Metadata sqlxx.JSONRawMessage `json:"metadata,omitempty" db:"metadata"`
+
+	// User identifier
+	UserID string `json:"user_id" db:"user_id"`
 }
 
 func (Client) TableName() string {
@@ -326,4 +329,8 @@ func (c *Client) GetTokenEndpointAuthMethod() string {
 
 func (c *Client) GetRequestURIs() []string {
 	return c.RequestURIs
+}
+
+func (c *Client) GetUserID() string {
+	return c.UserID
 }

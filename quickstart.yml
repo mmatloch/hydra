@@ -13,23 +13,19 @@
 version: '3.7'
 
 services:
-
   hydra:
-    image: oryd/hydra:v1.10.6-sqlite
+    image: oryd/hydra:latest-sqlite
     ports:
-      - "4444:4444" # Public port
-      - "4445:4445" # Admin port
-      - "5555:5555" # Port for hydra token user
-    command:
-      serve -c /etc/config/hydra/hydra.yml all --dangerous-force-http
+      - '4444:4444' # Public port
+      - '4445:4445' # Admin port
+      - '5555:5555' # Port for hydra token user
+    command: serve -c /etc/config/hydra/hydra.yml all --dangerous-force-http
     volumes:
-      -
-        type: volume
+      - type: volume
         source: hydra-sqlite
         target: /var/lib/sqlite
         read_only: false
-      -
-        type: bind
+      - type: bind
         source: ./contrib/quickstart/5-min
         target: /etc/config/hydra
     environment:
@@ -41,19 +37,16 @@ services:
       - intranet
 
   hydra-migrate:
-    image: oryd/hydra:v1.10.6-sqlite
+    image: oryd/hydra:latest-sqlite
     environment:
       - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
-    command:
-      migrate -c /etc/config/hydra/hydra.yml sql -e --yes
+    command: migrate -c /etc/config/hydra/hydra.yml sql -e --yes
     volumes:
-      -
-        type: volume
+      - type: volume
         source: hydra-sqlite
         target: /var/lib/sqlite
         read_only: false
-      -
-        type: bind
+      - type: bind
         source: ./contrib/quickstart/5-min
         target: /etc/config/hydra
     restart: on-failure
@@ -65,7 +58,7 @@ services:
       - HYDRA_ADMIN_URL=http://hydra:4445
     image: oryd/hydra-login-consent-node:v1.10.6
     ports:
-      - "3000:3000"
+      - '3000:3000'
     restart: unless-stopped
     networks:
       - intranet

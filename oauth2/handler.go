@@ -482,6 +482,14 @@ func (h *Handler) IntrospectHandler(w http.ResponseWriter, r *http.Request, _ ht
 		audience = fosite.Arguments{}
 	}
 
+	c, ok := resp.GetAccessRequester().GetClient().(*client.Client)
+	if !ok {
+		err := errorsx.WithStack(fosite.ErrServerError.WithHint("Unable to type assert to *client.Client."))
+		x.LogError(r, err, h.r.Logger())
+		h.r.OAuth2Provider().WriteIntrospectionError(w, err)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 	if err = json.NewEncoder(w).Encode(&Introspection{
 		Active:            resp.IsActive(),
@@ -498,6 +506,7 @@ func (h *Handler) IntrospectHandler(w http.ResponseWriter, r *http.Request, _ ht
 		TokenType:         resp.GetAccessTokenType(),
 		TokenUse:          string(resp.GetTokenUse()),
 		NotBefore:         resp.GetAccessRequester().GetRequestedAt().Unix(),
+		UserID:            c.GetUserID(),
 	}); err != nil {
 		x.LogError(r, errorsx.WithStack(err), h.r.Logger())
 	}

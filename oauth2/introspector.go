@@ -86,4 +86,7 @@ type Introspection struct {
 
 	// Extra is arbitrary data set by the session.
 	Extra map[string]interface{} `json:"ext,omitempty"`
+
+	// User identifier
+	UserID string `json:"user_id,omitempty"`
 }
