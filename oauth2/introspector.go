@@ -89,4 +89,7 @@ type Introspection struct {
 
 	// User identifier
 	UserID string `json:"user_id,omitempty"`
+
+	// User role
+	Role string `json:"role,omitempty"`
 }

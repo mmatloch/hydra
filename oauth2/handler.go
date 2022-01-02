@@ -515,6 +515,7 @@ func (h *Handler) IntrospectHandler(w http.ResponseWriter, r *http.Request, _ ht
 		TokenUse:          string(resp.GetTokenUse()),
 		NotBefore:         resp.GetAccessRequester().GetRequestedAt().Unix(),
 		UserID:            c.GetUserID(),
+		Role:              c.GetRole(),
 	}); err != nil {
 		x.LogError(r, errorsx.WithStack(err), h.r.Logger())
 	}

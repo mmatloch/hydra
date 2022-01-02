@@ -203,6 +203,9 @@ type Client struct {
 	UserID string `json:"user_id" db:"user_id"`
 
 	Username string `json:"username" db:"username"`
+
+	// User role
+	Role string `json:"role" db:"role"`
 }
 
 func (Client) TableName() string {
@@ -339,4 +342,8 @@ func (c *Client) GetUserID() string {
 
 func (c *Client) GetUsername() string {
 	return c.Username
+}
+
+func (c *Client) GetRole() string {
+	return c.Role
 }
